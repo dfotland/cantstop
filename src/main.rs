@@ -1,0 +1,46 @@
+
+use clap::Parser;
+use rand::prelude::*;
+
+#[derive(Parser)]
+#[command(arg_required_else_help = true)]
+struct Args {
+    #[arg(short, long, value_name = "NUM_SIMS")]
+    sim: Option<u32>,
+}
+
+fn main() {
+    let args = Args::parse();
+    if args.sim != None {
+        simulate(args.sim.unwrap());
+    }
+}
+
+fn simulate(num_sims: u32) {
+    println!("{} simulations.\n", num_sims);
+    let mut rng = rand::rng();
+    let mut counts: [u32; 13] = [0u32; 13];
+    let mut doubles: [u32; 13] = [0u32; 13];
+    for _i in 0..num_sims {
+        let rolls: Vec<u32> = (1..=4).map(|_x| rng.random_range(1..=6)).collect();
+        let vals:[u32; 6] = [rolls[0]+rolls[1], rolls[2]+rolls[3], rolls[0]+rolls[2], rolls[1]+rolls[3], rolls[0]+rolls[3], rolls[1]+rolls[2]];
+        for j in 2..=12 {
+            if vals.contains(&j) {
+                counts[j as usize] += 1;
+            }
+            if vals[0] == j && vals[1] == j {
+                doubles[j as usize] += 1;
+            } else if vals[2] == j && vals[3] == j {
+                doubles[j as usize] += 1;
+            } else if vals[4] == j && vals[5] == j {
+                doubles[j as usize] += 1;
+            }
+        }
+    }
+    println!("    one two");
+    for i in 2..=12 {
+
+        println!("{:2}: {:2.0}% {:2.0}%", i, 100. * counts[i] as f32/num_sims as f32, 100. * doubles[i] as f32/num_sims as f32);
+    }
+}
+
