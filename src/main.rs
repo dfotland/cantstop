@@ -17,17 +17,38 @@ fn main() {
 }
 
 fn simulate(num_sims: u32) {
-    println!("{} simulations.\n", num_sims);
+    println!("Can't Stop: {} simulations.\n", num_sims);
     let mut rng = rand::rng();
     let mut counts: [u32; 13] = [0u32; 13];
     let mut doubles: [u32; 13] = [0u32; 13];
+    let patterns: Vec<[u32; 3]> = 
+        vec![[6, 7, 8], 
+            [5, 6, 7], 
+            [5, 6, 8],
+            [5, 6, 9], 
+            [4, 6, 7], 
+            [4, 6, 8], 
+            [4, 5, 7], 
+            [4, 5, 6], 
+            [4, 5, 9], 
+            [3, 6, 7], 
+            [3, 6, 8], 
+            [3, 5, 7], 
+            [3, 5, 6],
+            [3, 4, 7],
+            [3, 4, 6],
+            [3, 4, 5],
+            [3, 4, 10]];
+    let mut pattern_counts = vec![0u32; patterns.len() as usize];
     for _i in 0..num_sims {
         let rolls: Vec<u32> = (1..=4).map(|_x| rng.random_range(1..=6)).collect();
         let vals:[u32; 6] = [rolls[0]+rolls[1], rolls[2]+rolls[3], rolls[0]+rolls[2], rolls[1]+rolls[3], rolls[0]+rolls[3], rolls[1]+rolls[2]];
         for j in 2..=12 {
-            if vals.contains(&j) {
+            // single value match
+            if contains_any(&vals, &[j]) {
                 counts[j as usize] += 1;
             }
+            // single value match twice
             if vals[0] == j && vals[1] == j {
                 doubles[j as usize] += 1;
             } else if vals[2] == j && vals[3] == j {
@@ -36,11 +57,28 @@ fn simulate(num_sims: u32) {
                 doubles[j as usize] += 1;
             }
         }
+        // multiple value match any
+        for (idx, pattern) in patterns.iter().enumerate() {
+            if contains_any(&vals, pattern) {
+                pattern_counts[idx] += 1;
+            }
+        }
     }
     println!("    one two");
     for i in 2..=12 {
-
         println!("{:2}: {:2.0}% {:2.0}%", i, 100. * counts[i] as f32/num_sims as f32, 100. * doubles[i] as f32/num_sims as f32);
+    }
+    println!("\nAny value in the list");
+    for (idx, count) in pattern_counts.iter().enumerate() {
+        println!("{:1?}: {:2.0}%", patterns[idx], 100. * *count as f32/num_sims as f32);
     }
 }
 
+fn contains_any(vals: &[u32], of: &[u32]) -> bool {
+    for i in of {
+        if vals.contains(i) {
+            return true;
+        }
+    }
+    false
+}
