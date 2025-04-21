@@ -38,7 +38,21 @@ fn simulate(num_sims: u32) {
             [3, 4, 7],
             [3, 4, 6],
             [3, 4, 5],
-            [3, 4, 10]];
+            [3, 4, 10],
+            [2, 6, 7], 
+            [2, 6, 8], 
+            [2, 5, 7], 
+            [2, 5, 6],
+            [2, 4, 7],
+            [2, 4, 6],
+            [2, 4, 5],
+            [2, 4, 10],
+            [2, 3, 7],
+            [2, 3, 6],
+            [2, 3, 5],
+            [2, 3, 4]            
+            
+            ];
     let mut pattern_counts = vec![0u32; patterns.len() as usize];
     for _i in 0..num_sims {
         let rolls: Vec<u32> = (1..=4).map(|_x| rng.random_range(1..=6)).collect();
