@@ -1,19 +1,40 @@
 
 use clap::Parser;
 use rand::prelude::*;
+// Prefer to use the Clap Derive marcros rather than the older Builder macros.
+// https://docs.rs/clap/latest/clap/_faq/index.html#when-should-i-use-the-builder-vs-derive-apis
+// https://docs.rs/clap/latest/clap/_derive/index.html#doc-comments
 
-#[derive(Parser)]
-#[command(arg_required_else_help = true)]
+#[derive(Parser, Debug)]
+/// cantstop: Simulate situations in the Can't Stop game to estimate probabilities of success.
+#[command(version, arg_required_else_help = false)]
 struct Args {
-    #[arg(short, long, value_name = "NUM_SIMS")]
-    sim: Option<u32>,
+    /// Simulate all common scenarios
+    #[arg(short, long)]
+    all: bool,
+
+    // number of simulations
+    #[arg(short, long, value_name = "NUM_SIMS", default_value_t = 10000)]
+    num_sims: u32,
+
+    /// simulate a specific scenario
+    #[arg(short, long, value_name = "SPECIFIC")]
+    specific: Option<String>
 }
 
 fn main() {
     let args = Args::parse();
-    if args.sim != None {
-        simulate(args.sim.unwrap());
+    if args.specific != None {
+        specific(args.specific.unwrap(), args.num_sims);
     }
+    if args.all {
+        simulate(args.num_sims);
+    }
+}
+
+fn specific(specific: String, num_sims: u32) -> () {
+    let vals = specific.split_whitespace();
+    println!("{}", vals);
 }
 
 fn simulate(num_sims: u32) {
@@ -51,7 +72,6 @@ fn simulate(num_sims: u32) {
             [2, 3, 6],
             [2, 3, 5],
             [2, 3, 4]            
-            
             ];
     let mut pattern_counts = vec![0u32; patterns.len() as usize];
     for _i in 0..num_sims {
