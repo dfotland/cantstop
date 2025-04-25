@@ -14,7 +14,7 @@ struct Args {
     all: bool,
 
     // number of simulations
-    #[arg(short, long, value_name = "NUM_SIMS", default_value_t = 10000)]
+    #[arg(short, long, value_name = "NUM_SIMS", default_value_t = 100000)]
     num_sims: u32,
 
     /// simulate a specific scenario
@@ -33,8 +33,17 @@ fn main() {
 }
 
 fn specific(specific: String, num_sims: u32) -> () {
-    let vals = specific.split_whitespace();
-    println!("{}", vals);
+    let pattern:Vec<u32> = specific.split_whitespace().map(|val| val.parse::<u32>().unwrap()).collect();
+    let mut count = 0;
+    let mut rng = rand::rng();
+    for _ in 0..num_sims {
+        let rolls: Vec<u32> = (1..=4).map(|_x| rng.random_range(1..=6)).collect();
+        let vals:[u32; 6] = [rolls[0]+rolls[1], rolls[2]+rolls[3], rolls[0]+rolls[2], rolls[1]+rolls[3], rolls[0]+rolls[3], rolls[1]+rolls[2]];
+        if contains_any(&vals, &pattern) {
+            count += 1;
+        }
+    }
+    println!("Any value in {:?}: {:2.0}%", pattern, 100. * count as f32 / num_sims as f32)
 }
 
 fn simulate(num_sims: u32) {
