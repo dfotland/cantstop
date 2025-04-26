@@ -107,9 +107,14 @@ fn simulate(num_sims: u32) {
             }
         }
     }
-    println!("    one two");
+    println!("    one two expected turns to top");
+    let tops = [0, 0, 2, 4, 6, 8, 10, 12, 10, 8, 6, 4, 2];
     for i in 2..=12 {
-        println!("{:2}: {:2.0}% {:2.0}%", i, 100. * counts[i] as f32/num_sims as f32, 100. * doubles[i] as f32/num_sims as f32);
+        let expected = (counts[i] + doubles[i]) as f32/num_sims as f32;
+        println!("{:2}: {:2.0}% {:2.0}% {:.2}     {:.0}", i, 
+            100. * counts[i] as f32/num_sims as f32, 
+            100. * doubles[i] as f32/num_sims as f32,
+            expected, tops[i] as f32 / expected);
     }
     println!("\nAny value in the list");
     for (idx, count) in pattern_counts.iter().enumerate() {
